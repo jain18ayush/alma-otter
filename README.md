@@ -1,2 +1,2 @@
 # alma-otter
-Dec Ada Alma-Otter Team Repository
+Dev Ada Alma-Otter Team Repository
