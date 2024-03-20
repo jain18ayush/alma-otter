@@ -1,5 +1,28 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { FontLoader } from 'three/addons/loaders/FontLoader.js';
+import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+
+let width = window.innerWidth
+let height = window.innerHeight
+const size = 256
+const container = document.querySelector('#threejs-container')
+const canvas = document.createElement('canvas'),
+ctx = canvas.getContext('2d')
+function changeCanvas() {
+	ctx.font = '20pt Arial'
+	ctx.fillStyle = 'white'
+	ctx.fillRect(0, 0, canvas.width, canvas.height)
+	ctx.fillStyle = 'black'
+	ctx.textAlign = 'center'
+	ctx.textBaseline = 'middle'
+	const text = 'Do you want your \ndrink in plastic cup \nor reusable cup?';
+	const lines = text.split('\n');
+	const lineHeight = 30; // Adjust this value to set the spacing between lines
+	lines.forEach((line, index) => {
+		ctx.fillText(line, canvas.width / 2, canvas.height / 2 - (lines.length - 1) / 2 * lineHeight + index * lineHeight);
+	});
+}
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
@@ -7,6 +30,24 @@ const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.inner
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
+container.append(renderer.domElement);
+renderer.render(scene, camera);
+
+const texture = new THREE.Texture(canvas)
+
+var materialText = [
+	new THREE.MeshStandardMaterial({color: 0xFFFFFF}),
+	new THREE.MeshStandardMaterial({map: texture}),
+	new THREE.MeshStandardMaterial({color: 0xFFFFFF}),
+	new THREE.MeshStandardMaterial({color: 0xFFFFFF}),
+	new THREE.MeshStandardMaterial({color: 0xFFFFFF}),
+	new THREE.MeshStandardMaterial({color: 0xFFFFFF})
+];
+
+const geo = new THREE.BoxGeometry(0.2, 1, 2);
+const mesh = new THREE.Mesh(geo, materialText);
+mesh.position.set(2.5,1,0.5);
+scene.add(mesh)
 
 const geometry = new THREE.BoxGeometry( 10, 10, 0.1 );
 const material = new THREE.MeshPhongMaterial({ color: 0xe4d8c7 });
@@ -53,7 +94,7 @@ scene.add(menu);
 const tablegeo = new THREE.CylinderGeometry(1.5, 1.5, 0.3, 32, 32, false);
 const table = new THREE.Mesh(tablegeo, counterMaterial);
 table.position.x = -2.25;
-table.position.y = -1.1;
+table.position.y = -1.0;
 table.position.z = -2.25;
 scene.add(table);
 
@@ -108,7 +149,6 @@ person.position.z = 2.5;
 person.rotation.y = Math.PI / 2;
 scene.add(person);
 
-const text = new THREE.TextGeometry("text", )
 
 renderer.setClearColor(0xffffff); // Set background color to black
 
@@ -130,6 +170,8 @@ controls.update();
 
 function animate() {
 	requestAnimationFrame( animate );
+	changeCanvas()
+   texture.needsUpdate = true
     controls.update();
 	renderer.render( scene, camera );
 }
